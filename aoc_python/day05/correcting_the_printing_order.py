@@ -8,19 +8,25 @@ def correct_printing_order(filename)-> int:
             rules.append((int(a), int(b)))
         updates = [list(map(int, line.split(","))) for line in updates.split("\n")]
 
-        # print(f'rules: {rules}\nupdates: {updates}\n\n')
         count = 0
-        mid_points = 0
         for update in updates:
-            # print(f'checking update {update}')
-            good, mid = follows_rules(rules, update)
-            if good:
-                # print(f'calling the function follows_rules with rules: {rules} and update: {update}')
-                # print(f'update: {update} follows rules')
-                count += 1
-                mid_points += mid
-        print(f'count: {count} mid_points: {mid_points}')
-        return mid_points
+  
+            if follows_rules(rules, update):
+                continue
+            corected_update = sort_updates(rules, update)
+            count += corected_update[len(corected_update)//2]
+
+        return count
+
+def sort_updates(rules, update):
+    while True:
+        sorted = True
+        for i in range(len(update)-1):
+            if (update[i], update[i+1]) in rules:
+                update[i], update[i+1] = update[i+1], update[i]
+                sorted = False
+        if sorted:
+            return update
 
 
 def follows_rules(rules, update):
@@ -31,12 +37,12 @@ def follows_rules(rules, update):
     for a,b in rules:
         if a in idx and b in idx and not idx[a] < idx[b]:
             # print(f'rule {a} {b} not followed')
-            return False, 0
-    return True, update[len(update)//2]
+            return False
+    return True
 
 if __name__ == "__main__":
     filename = "day05_input.txt"
     example = "test.txt"
     
-    print(f'Part 1 example input : {correct_printing_order(example)}')
-    print(f'Part 1 actual input : {correct_printing_order(filename)}')
+    print(f'Part 2 example input : {correct_printing_order(example)}')
+    print(f'Part 2 actual input : {correct_printing_order(filename)}')
