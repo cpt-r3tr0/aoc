@@ -1,20 +1,4 @@
-import sys
 from collections import deque
-
-
-def perimeter(region: set[tuple[int]]) -> int:
-    total = 0
-    for r, c in region:
-        num_neighbors = len(
-            [
-                1
-                for dr, dc in ((-1, 0), (1, 0), (0, -1), (0, 1))
-                if (r + dr, c + dc) in region
-            ]
-        )
-        total += 4 - num_neighbors
-    return total
-
 
 def sides(region: set[tuple[int]]) -> int:
     up, down, left, right = (set() for _ in range(4))
@@ -51,38 +35,43 @@ def sides(region: set[tuple[int]]) -> int:
 
     return count
 
+def calculate_sides(filename: str) -> int :
+    grid = []
+    with open(filename, "r") as f:
+        grid = list(map(str.strip, f.readlines()))
+    num_rows = len(grid)
+    num_cols = len(grid[0])
 
-with open(sys.argv[1], "r") as f:
-    grid = list(map(str.strip, f.readlines()))
-num_rows = len(grid)
-num_cols = len(grid[0])
+    regions = []
+    seen = set()
+    for r in range(num_rows):
+        for c in range(num_cols):
+            if (r, c) in seen:
+                continue
+            region = set()
+            queue = deque([(r, c)])
+            while queue:
+                rr, cc = queue.popleft()
+                region.add((rr, cc))
+                for dr, dc in ((-1, 0), (1, 0), (0, -1), (0, 1)):
+                    nr, nc = rr + dr, cc + dc
+                    if (
+                        (nr, nc) not in seen
+                        and 0 <= nr < num_rows
+                        and 0 <= nc < num_cols
+                        and grid[nr][nc] == grid[rr][cc]
+                    ):
+                        queue.append((nr, nc))
+                        seen.add((nr, nc))
+            regions.append(region)
 
-regions = []
-seen = set()
-for r in range(num_rows):
-    for c in range(num_cols):
-        if (r, c) in seen:
-            continue
-        region = set()
-        queue = deque([(r, c)])
-        while queue:
-            rr, cc = queue.popleft()
-            region.add((rr, cc))
-            for dr, dc in ((-1, 0), (1, 0), (0, -1), (0, 1)):
-                nr, nc = rr + dr, cc + dc
-                if (
-                    (nr, nc) not in seen
-                    and 0 <= nr < num_rows
-                    and 0 <= nc < num_cols
-                    and grid[nr][nc] == grid[rr][cc]
-                ):
-                    queue.append((nr, nc))
-                    seen.add((nr, nc))
-        regions.append(region)
+        total_sides = sum(len(r) * sides(r) for r in regions)
+
+    return total_sides
 
 
-part1 = sum(len(r) * perimeter(r) for r in regions)
-print(f"Part 1: {part1}")
-
-part2 = sum(len(r) * sides(r) for r in regions)
-print(f"Part 2: {part2}")
+if __name__ == "__main__":
+    filename = 'example.txt'
+    print(f'permimeter for example file is  : {calculate_sides(filename)}')
+    filename = 'day12_input.txt'
+    print(f'permimeter for input file is  : {calculate_sides(filename)}')
