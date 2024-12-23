@@ -38,7 +38,7 @@ def solve_puzzle_p1(filename):
         for ndr, ndc in [(-dc, dr), (dc, -dr)]:
             if (r, c, ndr, ndc) not in seen and grid[r + ndr][c + ndc] != "#":
                 heapq.heappush(queue, (cost + 1000, r, c, ndr, ndc, list(path)))
-    return part1, len(points)
+    return part1
 
 if __name__ == "__main__":
     filename = "example.txt"
