@@ -2,7 +2,7 @@
 def solve_puzzle_p2(filename):
     with open(filename, "r") as f:
         grid = list(map(str.strip, f.readlines()))
-    pass
+
 
 if __name__ == "__main__":
     filename = "example.txt"
